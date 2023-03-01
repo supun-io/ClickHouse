@@ -109,7 +109,9 @@ def get_run_commands_glibc(build_path, result_folder):
     ]
 
 
-def get_run_commands_distributions(build_path, result_folder, server_log_folder, image_centos, image_ubuntu):
+def get_run_commands_distributions(
+    build_path, result_folder, server_log_folder, image_centos, image_ubuntu
+):
     return [
         f"docker run --network=host --volume={build_path}/usr/bin/clickhouse:/clickhouse "
         f"--volume={build_path}/etc/clickhouse-server:/config "
@@ -124,7 +126,9 @@ def parse_args():
     parser = argparse.ArgumentParser("Check compatibility with old distributions")
     parser.add_argument("--check-name", required=True)
     parser.add_argument("--check-glibc", action="store_true")
-    parser.add_argument("--check-distributions", action="store_true") # currently hardcoded to x86, don't enable for ARM
+    parser.add_argument(
+        "--check-distributions", action="store_true"
+    )  # currently hardcoded to x86, don't enable for ARM
     return parser.parse_args()
 
 
@@ -180,8 +184,16 @@ def main():
         run_commands.extend(check_glibc_commands)
 
     if args.check_distributions:
-        docker_images = get_images_with_versions(reports_path, [IMAGE_CENTOS, IMAGE_UBUNTU])
-        check_distributions_commands = get_run_commands_distributions(packages_path, result_path, server_log_path, docker_images[0], docker_images[1])
+        docker_images = get_images_with_versions(
+            reports_path, [IMAGE_CENTOS, IMAGE_UBUNTU]
+        )
+        check_distributions_commands = get_run_commands_distributions(
+            packages_path,
+            result_path,
+            server_log_path,
+            docker_images[0],
+            docker_images[1],
+        )
         run_commands.extend(check_distributions_commands)
 
     state = "success"
